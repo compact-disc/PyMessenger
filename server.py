@@ -7,34 +7,83 @@
 
 #!/usr/bin/env python3
 
+# import the sockets
 import socket
 
+# importing multithreading
+from _thread import *
+import threading
+lock = threading.Lock()
+
+PORT = 800
+
+# Server Class
 class Server:
 	def start_server():
-		server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		server.bind(("localhost", 800))
+
+		# Try and create the socket on PORT
+		try:
+			# Setup a TCP server on the local machine on port 800
+			server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			server.bind(("localhost", PORT))
+			print("Server started...")
+
+		# Catch if the socket cannot be created, likely the PORT is in use
+		except:
+			print("Cannot start the server on port", PORT)
+
+		# Server start listening for connections
 		server.listen()
 
+		# Keep a while loop going forever to accept new connections
 		while True:
-
+			# Wait for a new connection, then continue
 			conn, addr = server.accept()
 
-			print("connection from:", addr)
+			#Create a new client class and start it on a new thread
+			client_connection = ClientConnection
+			start_new_thread(client_connection.connect_client, (conn, addr))
 
-			while True:
-				data = conn.recv(512)
-				print("message from", addr)
-				if data.decode() == "shutdown":
-					conn.close()
-					exit()
-				elif data.decode() == "disconnect":
-					conn.close()
-					break
-				else:
-					reply = data.decode()
-					conn.send(reply.encode())
+		# Close the server when the loop breaks
+		s.close()
 
+# Class for client connections
+class ClientConnection:
+
+	# Username for the client
+	username = ""
+
+	def connect_client(conn, addr):
+
+		# Get the username and store it as a class variable
+		u = conn.recv(512)
+		username = u.decode()
+
+		print(username, "connected from", addr)
+
+		# Loop forever as long as there is a client connected
+		while True:
+
+			# Receive new data from the client
+			data = conn.recv(512)
+
+			# Check if the message is exit
+			# If "exit" received, then close the connection and break the loop
+			if data.decode() == "exit":
+				print(username, "disconnected from", addr)
+				conn.close()
+				break
+
+			# Otherwise receive the data and print the data, send reply
+			else:
+				print("Message:", data.decode(), ", from", username, "at", addr)
+				reply = data.decode()
+				conn.send(reply.encode())
+
+
+# Main to start the server
 def main():
+	print("Starting server...")
 	server = Server
 	server.start_server()
 
