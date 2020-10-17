@@ -15,7 +15,27 @@ from _thread import *
 import threading
 lock = threading.Lock()
 
+# SQL Connection
+# Local server, account, and database created for PyMessenger
+import mysql.connector
+sql_db = mysql.connector.connect(
+		host="db.cdero.com",
+		port="3306",
+		user="pymessenger",
+		password="L6Bw4NdEhkxuZGtX",
+		database="pymessenger"
+)
+
+# Server Port
 PORT = 800
+
+# Write users username and message to the messages database
+def write_message_to_db(usr, msg):
+	db_cursor = sql_db.cursor()
+	query = "INSERT INTO messages (username, message) VALUES (%s, %s)"
+	values = (usr, msg)
+	db_cursor.execute(query, values)
+	sql_db.commit()
 
 # Server Class
 class Server:
@@ -24,7 +44,9 @@ class Server:
 		# Try and create the socket on PORT
 		try:
 			# Setup a TCP server on the local machine on port 800
+			# Set socket options to be able to reuse port when killing server
 			server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			server.bind(("localhost", PORT))
 			print("Server started...")
 
@@ -77,9 +99,9 @@ class ClientConnection:
 			# Otherwise receive the data and print the data, send reply
 			else:
 				print("Message:", data.decode(), ", from", username, "at", addr)
+				write_message_to_db(username, data.decode())
 				reply = data.decode()
 				conn.send(reply.encode())
-
 
 # Main to start the server
 def main():
