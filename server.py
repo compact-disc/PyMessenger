@@ -29,6 +29,9 @@ sql_db = mysql.connector.connect(
 # Server Port
 PORT = 800
 
+# Client Connections
+clients = []
+
 # Write users username and message to the messages database
 def write_message_to_db(usr, msg):
 	db_cursor = sql_db.cursor()
@@ -36,6 +39,13 @@ def write_message_to_db(usr, msg):
 	values = (usr, msg)
 	db_cursor.execute(query, values)
 	sql_db.commit()
+
+# Echo replies from 1 client to all the connected clients
+def echo_replies(msg, conn):
+	for connection in clients:
+		if conn != connection:
+			connection.send(msg.encode())
+			print("Yes")
 
 # Server Class
 class Server:
@@ -61,6 +71,10 @@ class Server:
 		while True:
 			# Wait for a new connection, then continue
 			conn, addr = server.accept()
+
+			# Create a connection variable and add it to the clients array
+			client = conn
+			clients.append(client)
 
 			#Create a new client class and start it on a new thread
 			client_connection = ClientConnection
@@ -95,13 +109,17 @@ class ClientConnection:
 				print(username, "disconnected from", addr)
 				conn.close()
 				break
+			elif len(data.decode()) == 0:
+				print(username, "disconnected from", addr)
+				conn.close()
+				break
 
 			# Otherwise receive the data and print the data, send reply
 			else:
 				print("Message:", data.decode(), ", from", username, "at", addr)
+
 				write_message_to_db(username, data.decode())
-				reply = data.decode()
-				conn.send(reply.encode())
+				echo_replies(data.decode(), conn)
 
 # Main to start the server
 def main():

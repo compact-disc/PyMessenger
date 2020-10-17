@@ -7,15 +7,21 @@
 
 #!/usr/bin/env python3
 
+import sys
+
 # import sockets
 import socket
 
 # import the argument parser
 import argparse
 
+# import multithreading
+from _thread import *
+import threading
+lock = threading.Lock()
+
 class Client:
-	def connect_client(username):
-		
+	def connect_client(username):		
 		# Try and connect to the server
 		try:
 			# Create the TCP connection on port 800 to the server
@@ -27,20 +33,26 @@ class Client:
 		except:
 			print("Cannot connect to server, exiting...");
 			exit()
-
+			
 		# Send the username to the server first
 		client.sendall(username.encode())
+
+		# Start a listener thread for server replies
+		start_new_thread(echo_listener, (client,))
 
 		# Keep waiting for new input until connection closed
 		while True:
 
-			# Get the user input
-			msg = input(str(">>"))
+			try:
+				msg = input(">>")
+			except:
+				print("")
+				client.close()
+				exit()
 
 			# If the input is exit, then send message, receive, close and break
 			if msg == "exit":
 				client.sendall(msg.encode())
-				data = client.recv(255)
 				print("Disconnected...")
 				client.close()
 				break
@@ -48,8 +60,15 @@ class Client:
 			# Else receive and print the response
 			else:
 				client.sendall(msg.encode())
-				data = client.recv(255)
-				print(data.decode())
+	
+def echo_listener(client):
+	while True:
+		data = client.recv(255)
+		print("")
+		print(data.decode(), end = "")
+		print("")
+		print(">>", end = "")
+		sys.stdout.flush()
 
 
 def main():
