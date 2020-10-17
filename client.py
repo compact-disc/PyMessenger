@@ -52,7 +52,14 @@ class Client:
 
 			# If the input is exit, then send message, receive, close and break
 			if msg == "exit":
-				client.sendall(msg.encode())
+				
+				try:
+					client.sendall(msg.encode())
+				except:
+					print("Lost connection from server, exiting...")
+					client.close()
+					exit()
+
 				print("Disconnected...")
 				client.close()
 				break
@@ -63,12 +70,18 @@ class Client:
 	
 def echo_listener(client):
 	while True:
+		
 		data = client.recv(255)
-		print("")
-		print(data.decode(), end = "")
-		print("")
-		print(">>", end = "")
-		sys.stdout.flush()
+
+		if data.decode() == "":
+			client.close()
+			exit()
+		else:
+			print("")
+			print(data.decode(), end = "")
+			print("")
+			print(">>", end = "")
+			sys.stdout.flush()
 
 
 def main():

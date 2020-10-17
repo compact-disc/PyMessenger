@@ -41,11 +41,11 @@ def write_message_to_db(usr, msg):
 	sql_db.commit()
 
 # Echo replies from 1 client to all the connected clients
-def echo_replies(msg, conn):
+def echo_replies(msg, conn, username):
 	for connection in clients:
 		if conn != connection:
-			connection.send(msg.encode())
-			print("Yes")
+			reply = username + ": " + msg
+			connection.send(reply.encode())
 
 # Server Class
 class Server:
@@ -119,11 +119,12 @@ class ClientConnection:
 				print("Message:", data.decode(), ", from", username, "at", addr)
 
 				write_message_to_db(username, data.decode())
-				echo_replies(data.decode(), conn)
+				echo_replies(data.decode(), conn, username)
 
 # Main to start the server
 def main():
 	print("Starting server...")
+
 	server = Server
 	server.start_server()
 

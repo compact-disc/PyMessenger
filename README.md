@@ -11,6 +11,7 @@ Python command line messenger with a server and client. Created and tested in Ub
 - Added the ability to just reuse the port if server crashes, close with Control-C (no more "port taken" issue)
 - Add MySQL database to store message id, username, and message
 - Echo messages to all clients after sending
+- Add usernames to replies
 
 ### Todo:
 - ~~Multiple Clients (Multithreading)~~
@@ -18,5 +19,6 @@ Python command line messenger with a server and client. Created and tested in Ub
 - ~~Echo messages to all clients after sending~~
 - ~~Add MySQL database to store message id, username, and message~~
 - Add server side commands
-- Add usernames to replies
+- ~~Add usernames to replies~~
+- More exception handling
 
