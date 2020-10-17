@@ -78,7 +78,7 @@ class ClientConnection:
 	def connect_client(conn, addr):
 
 		# Get the username and store it as a class variable
-		u = conn.recv(512)
+		u = conn.recv(255)
 		username = u.decode()
 
 		print(username, "connected from", addr)
@@ -87,7 +87,7 @@ class ClientConnection:
 		while True:
 
 			# Receive new data from the client
-			data = conn.recv(512)
+			data = conn.recv(255)
 
 			# Check if the message is exit
 			# If "exit" received, then close the connection and break the loop

@@ -40,7 +40,7 @@ class Client:
 			# If the input is exit, then send message, receive, close and break
 			if msg == "exit":
 				client.sendall(msg.encode())
-				data = client.recv(512)
+				data = client.recv(255)
 				print("Disconnected...")
 				client.close()
 				break
@@ -48,7 +48,7 @@ class Client:
 			# Else receive and print the response
 			else:
 				client.sendall(msg.encode())
-				data = client.recv(512)
+				data = client.recv(255)
 				print(data.decode())
 
 
