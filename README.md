@@ -18,7 +18,9 @@ Python command line messenger with a server and client. Created and tested in Ub
 - ~~Usernames on clients~~
 - ~~Echo messages to all clients after sending~~
 - ~~Add MySQL database to store message id, username, and message~~
-- Add server side commands
 - ~~Add usernames to replies~~
+- Add server side commands
 - More exception handling
+- User database with login upon connecting to server with client
+- TLS/SSL Encryption between client and server
 
