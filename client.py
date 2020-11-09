@@ -20,13 +20,15 @@ from _thread import *
 import threading
 lock = threading.Lock()
 
+PORT = 800
+
 class Client:
 	def connect_client(username):		
 		# Try and connect to the server
 		try:
 			# Create the TCP connection on port 800 to the server
 			client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			client.connect(("localhost", 800))
+			client.connect(("localhost", PORT))
 			print("Connected to server...")
 
 		# Catch if cannot connect to the server and exit (server likely not running)
@@ -45,6 +47,12 @@ class Client:
 
 			try:
 				msg = input(">>")
+
+			except (KeyboardInterrupt, SystemExit):
+				print("")
+				client.sendall("exit")
+				client.close()
+				exit()
 			except:
 				print("")
 				client.close()

@@ -15,6 +15,10 @@ from _thread import *
 import threading
 lock = threading.Lock()
 
+# import logging
+import logging as log
+log.basicConfig(level=log.INFO)
+
 # SQL Connection
 # Local server, account, and database created for PyMessenger
 import mysql.connector
@@ -58,19 +62,35 @@ class Server:
 			server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			server.bind(("localhost", PORT))
-			print("Server started...")
+			log.info("Server started, use Control^C to exit...")
 
 		# Catch if the socket cannot be created, likely the PORT is in use
 		except:
-			print("Cannot start the server on port", PORT)
+			log.error("Cannot start the server on port", PORT)
+			exit()
 
 		# Server start listening for connections
 		server.listen()
 
 		# Keep a while loop going forever to accept new connections
 		while True:
-			# Wait for a new connection, then continue
-			conn, addr = server.accept()
+
+			# Try accepting a client connection
+			try:
+			
+				# Wait for a new connection, then continue
+				conn, addr = server.accept()
+
+			# Except for Keyboard Interrupt and System Exit
+			# This is really used to properly close the server with Control^C
+			except (KeyboardInterrupt, SystemExit):
+				print("")
+				server.close()
+				exit()
+
+			except:
+				log.error("Unexpected Error...")
+				exit()
 
 			# Create a connection variable and add it to the clients array
 			client = conn
@@ -79,9 +99,6 @@ class Server:
 			#Create a new client class and start it on a new thread
 			client_connection = ClientConnection
 			start_new_thread(client_connection.connect_client, (conn, addr))
-
-		# Close the server when the loop breaks
-		s.close()
 
 # Class for client connections
 class ClientConnection:
@@ -95,7 +112,7 @@ class ClientConnection:
 		u = conn.recv(255)
 		username = u.decode()
 
-		print(username, "connected from", addr)
+		log.info(username, "connected from", addr)
 
 		# Loop forever as long as there is a client connected
 		while True:
@@ -106,24 +123,24 @@ class ClientConnection:
 			# Check if the message is exit
 			# If "exit" received, then close the connection and break the loop
 			if data.decode() == "exit":
-				print(username, "disconnected from", addr)
+				log.warning(username, "disconnected from", addr)
 				conn.close()
 				break
 			elif len(data.decode()) == 0:
-				print(username, "disconnected from", addr)
+				log.warning(username, "disconnected from", addr)
 				conn.close()
 				break
 
 			# Otherwise receive the data and print the data, send reply
 			else:
-				print("Message:", data.decode(), ", from", username, "at", addr)
+				log.info("Message:", data.decode(), ", from", username, "at", addr)
 
 				write_message_to_db(username, data.decode())
 				echo_replies(data.decode(), conn, username)
 
 # Main to start the server
 def main():
-	print("Starting server...")
+	log.info("Starting server...")
 
 	server = Server
 	server.start_server()

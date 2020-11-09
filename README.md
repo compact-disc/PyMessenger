@@ -1,6 +1,8 @@
 # PyMessenger
 
 Python command line messenger with a server and client. Created and tested in Ubuntu Linux.
+The server uses MySQL/MariaDB to log messages by username and ID. Client and Server use multithreading to
+perform multiple operations concurrently.
 
 ### Complete:
 - Multiple clients (Multithreading)
@@ -12,6 +14,7 @@ Python command line messenger with a server and client. Created and tested in Ub
 - Add MySQL database to store message id, username, and message
 - Echo messages to all clients after sending
 - Add usernames to replies
+- Added Python logging to server
 
 ### Todo:
 - ~~Multiple Clients (Multithreading)~~
@@ -23,4 +26,5 @@ Python command line messenger with a server and client. Created and tested in Ub
 - More exception handling
 - User database with login upon connecting to server with client
 - TLS/SSL Encryption between client and server
+- Improve logging on server side
 
