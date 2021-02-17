@@ -30,8 +30,9 @@ sql_db = mysql.connector.connect(
 		database="pymessenger"
 )
 
-# Server Port
-PORT = 800
+# Server Port and host
+PORT = 5050
+HOST = "localhost"
 
 # Client Connections
 clients = []
@@ -61,7 +62,7 @@ class Server:
 			# Set socket options to be able to reuse port when killing server
 			server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-			server.bind(("localhost", PORT))
+			server.bind((HOST, PORT))
 			log.info("Server started, use Control^C to exit...")
 
 		# Catch if the socket cannot be created, likely the PORT is in use

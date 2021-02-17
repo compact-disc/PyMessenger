@@ -20,7 +20,8 @@ from _thread import *
 import threading
 lock = threading.Lock()
 
-PORT = 800
+PORT = 5050
+HOST = "localhost"
 
 class Client:
 	def connect_client(username):		
@@ -28,7 +29,7 @@ class Client:
 		try:
 			# Create the TCP connection on port 800 to the server
 			client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			client.connect(("localhost", PORT))
+			client.connect((HOST, PORT))
 			print("Connected to server...")
 
 		# Catch if cannot connect to the server and exit (server likely not running)
